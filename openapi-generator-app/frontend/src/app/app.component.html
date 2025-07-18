@@ -1,0 +1,126 @@
+<div>
+  <h1>OpenAPI Generator</h1>
+  <form (ngSubmit)="generateCode()" #genForm="ngForm">
+    <div class="input-group">
+      <label>OpenAPI Specification:</label>
+
+      <div class="radio-group">
+        <input
+          type="radio"
+          id="urlOption"
+          name="inputType"
+          value="url"
+          [(ngModel)]="inputType"
+          required />
+        <label for="urlOption">URL de OpenAPI</label>
+
+        <input
+          type="radio"
+          id="fileOption"
+          name="inputType"
+          value="file"
+          [(ngModel)]="inputType"
+          required />
+        <label for="fileOption">Archivo local</label>
+      </div>
+
+      <div *ngIf="inputType === 'url'">
+        <label for="openapiUrl">Ruta o URL de OpenAPI:</label>
+        <input
+          type="text"
+          id="openapiUrl"
+          [(ngModel)]="openapiUrl"
+          name="openapiUrl"
+          placeholder="https://ejemplo.com/api/openapi.json"
+          [required]="inputType === 'url'" />
+      </div>
+
+      <div *ngIf="inputType === 'file'">
+        <label for="openapiFile">Seleccionar archivo OpenAPI:</label>
+        <input
+          type="file"
+          id="openapiFile"
+          (change)="onFileSelected($event)"
+          accept=".json,.yaml,.yml"
+          [required]="inputType === 'file'" />
+        <small *ngIf="selectedFileName"
+          >Archivo seleccionado: {{ selectedFileName }}</small
+        >
+      </div>
+    </div>
+
+    <label for="generatorName">Generador:</label>
+    <select
+      id="generatorName"
+      [(ngModel)]="generatorName"
+      name="generatorName"
+      (ngModelChange)="onGeneratorChange()"
+      required>
+      <option value="typescript-angular">TypeScript Angular (Cliente)</option>
+      <option value="spring">Spring Boot (Servidor)</option>
+    </select>
+
+    <label for="outputDir">Directorio de salida:</label>
+    <input
+      type="text"
+      id="outputDir"
+      [(ngModel)]="outputDir"
+      name="outputDir"
+      required />
+    <small>Se actualiza automáticamente según el generador seleccionado</small>
+
+    <label for="downloadFileName"
+      >Nombre del archivo de descarga (opcional):</label
+    >
+    <input
+      type="text"
+      id="downloadFileName"
+      [(ngModel)]="downloadFileName"
+      name="downloadFileName"
+      placeholder="codigo-generado.zip" />
+    <small>Se sugiere automáticamente según el generador seleccionado</small>
+
+    <label for="additionalProperties">Additional Properties:</label>
+    <input
+      type="text"
+      id="additionalProperties"
+      [(ngModel)]="additionalProperties"
+      name="additionalProperties" />
+
+    <button type="submit" [disabled]="genForm.invalid || isGenerating">
+      <span *ngIf="!isGenerating">🚀 Generar Código</span>
+      <span *ngIf="isGenerating">⏳ Generando...</span>
+    </button>
+  </form>
+
+  <!-- Indicador de progreso -->
+  <div *ngIf="isGenerating" class="progress-container">
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+    </div>
+    <div class="progress-text">
+      {{ progressMessage }}
+    </div>
+  </div>
+
+  <div *ngIf="error" style="color: red">
+    <strong>Error:</strong> {{ error }}
+  </div>
+
+  <div *ngIf="generatedCode">
+    <h2>Resultado:</h2>
+    <pre>{{ generatedCode }}</pre>
+
+    <div class="download-section">
+      <button
+        type="button"
+        class="download-btn"
+        (click)="downloadGeneratedFiles()"
+        [disabled]="isDownloading">
+        <span *ngIf="!isDownloading">📥 Descargar Archivos Generados</span>
+        <span *ngIf="isDownloading">⏳ Descargando...</span>
+      </button>
+      <small>Los archivos se descargarán como un archivo ZIP</small>
+    </div>
+  </div>
+</div>
