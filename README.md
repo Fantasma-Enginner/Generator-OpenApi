@@ -1,2 +1,2 @@
 # Generator-OpenApi
-Generator-OpenApi es una aplicacion creada por el Ing Romario Gonzalez 
+Generator-OpenApi es una aplicasion creada por el Ing Romario Gonzalez 
